@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -48,7 +49,16 @@ func handleRequests() {
 
 	http.HandleFunc("/fakenewstimes", FakeNewsTimes)
 
-	log.Fatal(http.ListenAndServe(":9000", nil))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9000"
+		log.Printf("Defaulting to port %s", port)
+	}
+
+	log.Printf("Listening on port %s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func updateDatabase() {
